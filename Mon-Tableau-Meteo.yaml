@@ -32,6 +32,7 @@ views:
                       class: header-left
                     content: |
                       <h1>Intérieure (°C)</h1>
+                      
                   - type: custom:mushroom-template-card
                     primary: '{{ states(''sensor.maison_temperature'') }}'
                     tap_action:
@@ -51,12 +52,14 @@ views:
                           {% endif %} 
                         }
                       class: middle-left
+                      
                   - type: custom:html-card
                     title: ''
                     card_mod:
                       class: bar-left
                     content: |
                       <h1>Extérieure (°C)</h1>
+                      
                   - type: custom:mushroom-template-card
                     primary: >-
                       {{ states('sensor.tempest_st_00032986_temperature') |
@@ -83,12 +86,14 @@ views:
                           {% endif %} 
                         }
                       class: middle-left
+                      
                   - type: custom:html-card
                     title: ''
                     card_mod:
                       class: bar-left
                     content: |
                       <h1>Vistesse du vent (km/h)</h1>
+                      
                   - type: custom:mushroom-template-card
                     primary: >-
                       {{ states('sensor.tempest_st_00032986_wind_speed') |
@@ -109,6 +114,7 @@ views:
                           {% else %} --card-primary-color:#FF5B61;               # Rouge              
                           {% endif %} 
                       class: middle-left
+                      
                   - type: custom:html-card
                     title: ''
                     content: '&nbsp;'
@@ -128,6 +134,7 @@ views:
                       class: header-left
                     content: |
                       <h1>[[sensor.date_du_jour]]</h1>
+                      
                   - type: custom:mushroom-template-card
                     primary: '{{ now().strftime(''%H:%M'') }}'
                     tap_action:
@@ -141,12 +148,13 @@ views:
                           --card-primary-color:#FFFFFF; # Blanc
                         }
                       class: middle-left
+                      
                   - type: custom:html-card
                     title: ''
                     card_mod:
                       class: bar-left
                     content: |
-                      <h1>Index UV - CO2</h1>
+                      <h1>Index UV - Bruit(DB)</h1>
 
                   - type: custom:mushroom-template-card
                     primary: >-
@@ -154,7 +162,7 @@ views:
                       %} {% if iuv > 0 %}
                          {{ states('sensor.tempest_st_00032986_uv_index') | round(2) }}
                       {% else %} 
-                         {{ states('sensor.maison_dioxyde_de_carbone') | int(0) }}
+                         {{ states('sensor.maison_bruit') | int(0) }}
                       {% endif %} 
                     tap_action:
                       action: none
@@ -165,7 +173,7 @@ views:
                           --card-primary-line-height: 161px !important;
                           text-align: center;
                           {% set iuv = states('sensor.tempest_st_00032986_uv_index') | float(0) %}
-                          {% set co2 = states('sensor.maison_dioxyde_de_carbone') | int(0) %}
+                          {% set bruit = states('sensor.maison_bruit') | int(0)  %}
                           {% if iuv > 0 %} 
                              {% if iuv < 3 %} --card-primary-color:#00ff13;       # Vert
                              {% elif iuv < 6 %} --card-primary-color:#FFED52;     # Jaune
@@ -174,11 +182,12 @@ views:
                              {% else %} --card-primary-color:#bc4dc1;             # Poupre
                              {% endif %}
                           {% else %}
-                             {% if co2 < 800 %} --card-primary-color:#00ff13;     # Vert
-                             {% elif co2 < 1200 %} --card-primary-color:#FFED52;  # Jaune
-                             {% elif co2 < 1800 %} --card-primary-color:#FDBA6F;  # Orange
-                             {% else %} --card-primary-color:#FF5B61;             # Rouge 
-                             {% endif %}
+                             {% if bruit < 60 %} --card-primary-color:#00ff13;       # Vert
+                             {% elif bruit < 90 %} --card-primary-color:#FFED52;     # Jaune
+                             {% elif bruit < 110 %} --card-primary-color:#FDBA6F;    # Orange
+                             {% elif bruit < 130 %} --card-primary-color:#FF5B61;    # Rouge
+                             {% else %} --card-primary-color:#bc4dc1;                # Poupre
+                             {% endif %}  
                           {% endif %} 
                           }      
                       class: middle-left
@@ -189,6 +198,7 @@ views:
                       class: bar-left
                     content: |
                       <h1>IQA</h1>
+                      
                   - type: custom:mushroom-template-card
                     primary: >-
                       {{
@@ -211,6 +221,7 @@ views:
                           {% endif %} 
                         }
                       class: middle-left
+                      
                   - type: custom:html-card
                     title: ''
                     content: '&nbsp;'
@@ -229,13 +240,13 @@ views:
                     card_mod:
                       class: header-left
                     content: |
-                      <h1>Pluies (mm)-Bruit(DB)</h1>
+                      <h1>Pluies (mm) - CO2</h1>
                       
                   - type: custom:mushroom-template-card
                     primary: >-
-                      {% set pluie = states('sensor.tempest_st_00032986_rain_today') | float(0)
-                      %} {% if pluie < 1 %}
-                         {{ states('sensor.maison_bruit') | int(0) }}
+                      {% set pluie = states('sensor.tempest_st_00032986_rain_today') | float(0) %}
+                      {% if pluie < 1 %}
+                         {{ states('sensor.maison_dioxyde_de_carbone') | int(0) }}
                       {% else %} 
                          {{ states('sensor.tempest_st_00032986_rain_today') | round(2) }}
                       {% endif %} 
@@ -248,14 +259,13 @@ views:
                           --card-primary-line-height: 161px !important;
                           text-align: center;
                           {% set pluie = states('sensor.tempest_st_00032986_rain_today') | float(0) %}
-                          {% set bruit = states('sensor.maison_bruit') | int(0)  %}
+                          {% set co2 = states('sensor.maison_dioxyde_de_carbone') | int(0) %}
                           {% if pluie < 1 %}
-                             {% if bruit < 60 %} --card-primary-color:#00ff13;       # Vert
-                             {% elif bruit < 90 %} --card-primary-color:#FFED52;     # Jaune
-                             {% elif bruit < 110 %} --card-primary-color:#FDBA6F;    # Orange
-                             {% elif bruit < 130 %} --card-primary-color:#FF5B61;    # Rouge
-                             {% else %} --card-primary-color:#bc4dc1;                # Poupre
-                             {% endif %}  
+                             {% if co2 < 800 %} --card-primary-color:#00ff13;     # Vert
+                             {% elif co2 < 1200 %} --card-primary-color:#FFED52;  # Jaune
+                             {% elif co2 < 1800 %} --card-primary-color:#FDBA6F;  # Orange
+                             {% else %} --card-primary-color:#FF5B61;             # Rouge 
+                             {% endif %}
                           {% else %}
                              {% if pluie < 10 %} --card-primary-color:#00ff13;       # Vert
                              {% elif pluie < 15 %} --card-primary-color:#FFED52;     # Jaune
@@ -273,6 +283,7 @@ views:
                       class: bar-left
                     content: |
                       <h1>Humidité (%)-Taux (mm/h)</h1>
+                      
                   - type: custom:mushroom-template-card
                     primary: >-
                       {% set taux = states('sensor.tempest_st_00032986_rain_rate') | float(0)
@@ -307,6 +318,7 @@ views:
                       class: bar-left
                     content: |
                       <h1>Pression (hPa)</h1>
+                      
                   - type: custom:mushroom-template-card
                     primary: >-
                       {{ states('sensor.tempest_st_00032986_station_pressure') 
@@ -344,12 +356,14 @@ views:
             content: '&nbsp;'
             card_mod:
               class: middle-blank
+              
           - type: custom:html-card
             title: ''
             content: |
               <h1>Paramètres</h1>
             card_mod:
               class: header-contained
+              
           - type: entities
             entities:
               - entity: input_boolean.lcars_sound
